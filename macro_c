@@ -194,7 +194,6 @@ sense_resistor: 0.110
 run_current: 1
 home_current: .75
 interpolate: true
-#stealthchop_threshold: 999999
 
 [stepper_z]
 dir_pin: Z_DIR
@@ -352,3 +351,18 @@ color_order: GRB
 [output_pin act_led]
 pin: !nhk:gpio8
 
+#-------------------------#
+#     Housekeeping        #
+#-------------------------#
+[pause_resume]
+[pause_resume]
+[display_status]
+[exclude_object]
+[respond]
+
+[idle_timeout]
+timeout: 3600
+gcode:
+    RESPOND MSG="Idle timeout reached"
+    TURN_OFF_HEATERS
+    M84
