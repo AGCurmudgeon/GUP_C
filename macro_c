@@ -355,10 +355,17 @@ pin: !nhk:gpio8
 #     Housekeeping        #
 #-------------------------#
 [pause_resume]
+
 [pause_resume]
+
 [display_status]
+
 [exclude_object]
+
 [respond]
+
+[gcode_arcs]
+resolution: 0.1
 
 [idle_timeout]
 timeout: 3600
