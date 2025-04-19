@@ -1,0 +1,253 @@
+#-------------------------#
+#   Includes              #
+#-------------------------#
+[include cartographer.cfg]
+[include timelapse.cfg]
+
+#-------------------------#
+#   Printer               #
+#-------------------------#
+[force_move]
+enable_force_move: True
+
+[input_shaper]
+enabled_extruders: extruder
+##  A frequency (in Hz) of the input shaper for X or Y axis. 
+shaper_freq_x: 47.5
+shaper_freq_y: 38.0
+##  A type of the intput shaper for X or Y axia.
+shaper_type_x: smooth_2hump_el
+shaper_type_y: smooth_zv
+##  Damping ratios of vibrations of X and Y axes used by input shapers
+##  to improve vibration suppression. Default value is 0.1 which is a
+##  good all-round value for most printers. In most circumstances this
+##  parameter requires no tuning and should not be changed.
+damping_ratio_x: 0.053
+damping_ratio_y: 0.047
+
+[printer]
+kinematics: limited_corexy
+max_velocity: 450
+max_accel: 12000
+max_x_accel: 12000
+max_y_accel: 10000
+max_z_velocity: 15
+max_z_accel: 350
+minimum_cruise_ratio: 0.5 # This left commented to not break older Klipper versions
+square_corner_velocity: 6.0
+scale_xy_accel: false
+
+# And add directly all the machines standard includes here
+# to put them above the rest from printer.cfg
+[include config/machine.cfg]
+
+#-------------------------#
+#   MOVE MOTORS           #
+#-------------------------#
+
+[stepper_x]
+high_precision_step_compress: True
+step_pin: PF13
+dir_pin: PF12
+enable_pin: !PF14
+rotation_distance: 40
+microsteps: 32
+full_steps_per_rotation:200  #set to 400 for 0.9 degree stepper
+position_min: 0
+position_endstop: 350
+position_max: 350
+homing_speed: 65   #Max 100
+homing_retract_dist: 0
+homing_positive_dir: true
+endstop_pin: tmc2209_stepper_x:virtual_endstop
+use_sensorless_homing: True
+
+[tmc2209 stepper_x]
+uart_pin: PC4
+diag_pin: ^PG6
+#driver_SGTHRS: 80
+sense_resistor: 0.110
+run_current: 1
+home_current: .75
+interpolate: true
+
+##  A Motor
+[stepper_y]
+high_precision_step_compress: True
+step_pin: PG0
+dir_pin: PG1
+enable_pin: !PF15
+rotation_distance: 40
+microsteps: 32
+full_steps_per_rotation:200  #set to 400 for 0.9 degree stepper
+endstop_pin: tmc2209_stepper_y:virtual_endstop
+position_min: 0
+position_endstop: 358
+position_max: 358
+homing_speed: 65  #Max 100
+homing_retract_dist: 0
+homing_positive_dir: true
+use_sensorless_homing: True
+
+[tmc2209 stepper_y]
+uart_pin: PD11
+diag_pin: ^PG9
+#driver_SGTHRS: 85
+sense_resistor: 0.110
+run_current: 1
+home_current: .75
+interpolate: true
+#stealthchop_threshold: 999999
+
+[stepper_z]
+dir_pin: Z_DIR
+enable_pin: !PG5
+rotation_distance: 40
+gear_ratio: 80:16
+microsteps: 32
+homing_retract_dist: 0
+##  In Z- Position
+endstop_pin: probe:z_virtual_endstop
+##  Z-position of nozzle (in mm) to z-endstop trigger point relative to print surface (Z0)
+##  (+) value = endstop above Z0, (-) value = endstop below
+##  Increasing position_endstop brings nozzle closer to the bed
+##  After you run Z_ENDSTOP_CALIBRATE, position_endstop will be stored at the very end of your config
+position_max: 300
+position_min: -2
+
+
+##  Make sure to update below for your relevant driver (2208 or 2209)
+[tmc2209 stepper_z]
+uart_pin: Z_TMCUART
+sense_resistor: 0.110
+run_current: 1.0
+#uart_address: 0
+
+
+##  In E1-MOT Position
+##  Z1 Stepper - Rear Left
+[stepper_z1]
+dir_pin: !Z1_DIR
+enable_pin: !PA0
+rotation_distance: 40
+gear_ratio: 80:16
+microsteps: 32
+
+##  Make sure to update below for your relevant driver (2208 or 2209)
+[tmc2209 stepper_z1]
+uart_pin: Z1_TMCUART
+sense_resistor: 0.110
+run_current: 1.0
+
+
+##  In E2-MOT Position
+##  Z2 Stepper - Rear Right
+[stepper_z2]
+dir_pin: Z2_DIR
+enable_pin: !PG2
+rotation_distance: 40
+gear_ratio: 80:16
+microsteps: 32
+
+##  Make sure to update below for your relevant driver (2208 or 2209)
+[tmc2209 stepper_z2]
+uart_pin: Z2_TMCUART
+sense_resistor: 0.110
+run_current: 1.0
+
+
+##  In E3-MOT Position
+##  Z3 Stepper - Front Right
+[stepper_z3]
+dir_pin: !Z3_DIR
+enable_pin: !PF1
+rotation_distance: 40
+gear_ratio: 80:16
+microsteps: 32
+
+##  Make sure to update below for your relevant driver (2208 or 2209)
+[tmc2209 stepper_z3]
+uart_pin: Z3_TMCUART
+sense_resistor: 0.110
+run_current: 1.0
+
+
+
+[neopixel status_leds]
+pin: nhk:gpio7
+chain_count: 4
+color_order: GRB
+
+[output_pin act_led]
+pin: !nhk:gpio8
+
+#-------------------------#
+#   TMC_AUTOTUNE          #
+#-------------------------#
+[autotune_tmc stepper_x]
+motor: omc-17hs19-2004s1
+tuning_goal: performance
+sg4_thrs: 120
+
+[autotune_tmc stepper_y]
+motor: omc-17hs19-2004s1
+tuning_goal: performance
+sg4_thrs: 100
+
+#-------------------------#
+# HOTEND/HEATING COOLING  #
+#-------------------------#
+[controller_fan controller_fan]
+pin: PE5
+kick_start_time: 0.5
+fan_speed: 1.0
+idle_timeout: 60
+
+[extruder]
+max_extrude_only_distance: 201
+step_pin: nhk:gpio23
+dir_pin: !nhk:gpio24
+enable_pin: !nhk:gpio25
+heater_pin: nhk:gpio9
+sensor_pin: nhk:gpio29
+sensor_type: ATC Semitec 104NT-4-R025H42G
+pullup_resistor: 2200
+min_temp: -50
+max_temp: 300
+max_power: 1.0
+min_extrude_temp: 170
+control = pid
+pid_Kp=13.111 
+pid_Ki=0.797 
+pid_Kd=53.920
+##  Try to keep pressure_advance below 1.0
+pressure_advance: 0.04
+pressure_advance_smooth_time=.01
+
+[heater_fan hotend_fan]
+#fan_speed: 1.0
+pin: nhk:gpio5
+tachometer_pin: nhk:gpio16
+tachometer_ppr: 2
+
+[tmc2209 extruder]
+sense_resistor: 0.100
+uart_pin: nhk:gpio0
+tx_pin: nhk:gpio1
+interpolate: false
+run_current: 1.0
+
+[fan]
+pin: nhk:gpio6
+
+[heater_bed]
+sensor_pin: BED_TEMPERATURE
+heater_pin: BED_HEATER
+sensor_type: Generic 3950
+max_power: 0.6
+min_temp: 0
+max_temp: 120
+control: pid
+pid_Kp=35.898 
+pid_Ki=1.383 
+pid_Kd=232.890
